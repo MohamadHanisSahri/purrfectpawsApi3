@@ -175,6 +175,7 @@ namespace PurrfectpawsApi.Controllers
                     shippingAddress.City = tUserPutDto.city;
                     shippingAddress.State = tUserPutDto.state;
                     shippingAddress.Postcode = tUserPutDto.postcode;
+                    shippingAddress.Country = tUserPutDto.country;
                 }
 
                 if (billingAddress != null)
@@ -186,6 +187,7 @@ namespace PurrfectpawsApi.Controllers
                         billingAddress.City = tUserPutDto.city;
                         billingAddress.State = tUserPutDto.state;
                         billingAddress.Postcode = tUserPutDto.postcode;
+                        billingAddress.Country = tUserPutDto.country;
                     }
                     else
                     {
@@ -194,6 +196,7 @@ namespace PurrfectpawsApi.Controllers
                         billingAddress.City = tUserPutDto.billingCity;
                         billingAddress.State = tUserPutDto.billingState;
                         billingAddress.Postcode = tUserPutDto.billingPostcode;
+                        billingAddress.Country = tUserPutDto.country;
                     }
                 }
 

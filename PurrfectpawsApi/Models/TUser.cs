@@ -75,6 +75,7 @@ public class TUserPutDto
     public string? street_2 { get; set; }
     public string city { get; set; }
     public string state { get; set; }
+    public string country { get; set; }
     public int postcode { get; set; }
     public string? billingStreet_1 { get; set; }
     public string? billingStreet_2 { get; set; }

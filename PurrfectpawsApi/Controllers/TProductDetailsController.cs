@@ -72,6 +72,7 @@ namespace PurrfectpawsApi.Controllers
 
                     var responseSizeQuantity = new TProductDetailsQuantityDto
                     {
+                        ProductId = productSizeQuantity.ProductId,
                         Quantity = productSizeQuantity.ProductQuantity
                     };
 
@@ -280,10 +281,12 @@ namespace PurrfectpawsApi.Controllers
         [HttpPost]
         public async Task<ActionResult<TPostProductDetail>> PostTProductDetail([FromForm] TPostProductDetail TPostProductDetail)
         {
-            if (_context.TProductDetails == null)
-            {
-                return Problem("Entity set 'PurrfectpawsContext.TProductDetails'  is null.");
-            }
+
+
+          if (_context.TProductDetails == null)
+          {
+              return Problem("Entity set 'PurrfectpawsContext.TProductDetails'  is null.");
+          }
 
             var newProductDetail = new TProductDetail
             {
@@ -294,7 +297,7 @@ namespace PurrfectpawsApi.Controllers
                 ProductCost = TPostProductDetail.ProductCost,
                 ProductRevenue = TPostProductDetail.ProductRevenue,
                 ProductProfit = TPostProductDetail.ProductProfit,
-                QuantitySold = TPostProductDetail.QuantitySold
+                QuantitySold = TPostProductDetail.QuantitySold,
             };
 
             // newProductDetail.TProductBlobImages = tProductDetail.TProductBlobImages;
@@ -303,7 +306,7 @@ namespace PurrfectpawsApi.Controllers
 
             await _context.SaveChangesAsync();
 
-            if (TPostProductDetail.Images != null && TPostProductDetail.Images.Count > 0)
+            if (TPostProductDetail.Image != null)
             {
                 var uploadedFileNames = new List<string>();
                 var imageUrls = new List<string>();
@@ -311,42 +314,31 @@ namespace PurrfectpawsApi.Controllers
                 string connectionString = _configuration.GetConnectionString("PurrfectpawsBlobStorageConnString");
                 BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
 
-                foreach (var image in TPostProductDetail.Images)
+                var containerName = "storagecontainerpurrfectpaws";
+                var filename = Guid.NewGuid() + Path.GetExtension(TPostProductDetail.Image.FileName);
+
+                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                BlobClient blobClient = containerClient.GetBlobClient(filename);
+
+                using (var stream = TPostProductDetail.Image.OpenReadStream())
                 {
-                    if (image.Length == 0)
-                    {
-                        continue;
-                    }
-
-                    var containerName = "storagecontainerpurrfectpaws";
-                    var filename = Guid.NewGuid() + Path.GetExtension(image.FileName);
-
-                    BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
-                    BlobClient blobClient = containerClient.GetBlobClient(filename);
-
-                    using (var stream = image.OpenReadStream())
-                    {
-                        await blobClient.UploadAsync(stream, true);
-                    }
-
-                    uploadedFileNames.Add(filename);
-
-                    var imageUrl = $"{blobClient.Uri}";
-                    imageUrls.Add(imageUrl);
-
-                    var productBlobImage = new TProductBlobImage
-                    {
-                        ProductDetailsId = newProductDetail.ProductDetailsId,
-                        BlobStorageId = filename
-                    };
-
-                    _context.TProductBlobImages.Add(productBlobImage);
-                    await _context.SaveChangesAsync();
-
-
+                    await blobClient.UploadAsync(stream, true);
                 }
 
+                uploadedFileNames.Add(filename);
+
+                var imageUrl = $"{blobClient.Uri}";
+                imageUrls.Add(imageUrl);
+
+                var productBlobImage = new TProductBlobImage
+                {
+                    ProductDetailsId = newProductDetail.ProductDetailsId,
+                    BlobStorageId = filename
+                };
+
+                _context.TProductBlobImages.Add(productBlobImage);
+                await _context.SaveChangesAsync();
             }
 
 
@@ -354,6 +346,7 @@ namespace PurrfectpawsApi.Controllers
 
             return Ok("success");
         }
+
 
 
         // DELETE: api/TProductDetails/5

@@ -53,7 +53,7 @@ public partial class TPostProductDetail
 
     public int? QuantitySold { get; set; }
 
-    public List<IFormFile> Images { get; set; }
+    public IFormFile Image { get; set; }
 
 }
 
