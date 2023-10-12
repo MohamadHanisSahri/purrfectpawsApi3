@@ -66,7 +66,8 @@ namespace PurrfectpawsApi.Controllers
                     Street2 = sa.Street2,
                     City = sa.City,
                     State = sa.State,
-                    Postcode = sa.Postcode
+                    Postcode = sa.Postcode,
+                    Country = sa.Country
                 }).ToList(),
                 BillingAddresses = (List<TBillingAddress>)user.TBillingAddresses.Select(ba => new TBillingAddress
                 {
@@ -76,7 +77,8 @@ namespace PurrfectpawsApi.Controllers
                     Street2 = ba.Street2,
                     City = ba.City,
                     State = ba.State,
-                    Postcode = ba.Postcode
+                    Postcode = ba.Postcode,
+                    Country = ba.Country
                 }).ToList()
             });
 
