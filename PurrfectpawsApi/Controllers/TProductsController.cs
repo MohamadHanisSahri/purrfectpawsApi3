@@ -297,6 +297,43 @@ namespace PurrfectpawsApi.Controllers
                         }
 
 
+                    } else
+                    {
+                        if (item.SizeId != null)
+                        {
+                            var getProduct = await _context.TProducts.FindAsync(item.ProductId);
+
+                            if (getProduct == null)
+                            {
+                                return NotFound("size product not found!");
+                            }
+
+                            getProduct.SizeId = item.SizeId;
+                            getProduct.VariationId = (int)item.VariationId;
+                            getProduct.ProductQuantity = item.ProductQuantity;
+
+                            await _context.SaveChangesAsync();
+                        }
+                        else if (item.LeadLengthId != null)
+                        {
+
+                            var getProduct = await _context.TProducts
+                                .Where(p => p.ProductId == item.ProductId)
+                                .FirstOrDefaultAsync();
+
+                            if (getProduct == null)
+                            {
+                                return NotFound("leadlength product not found!");
+                            }
+
+                            getProduct.LeadLengthId = item.LeadLengthId;
+                            getProduct.VariationId = (int)item.VariationId;
+                            getProduct.ProductQuantity = item.ProductQuantity;
+
+                            await _context.SaveChangesAsync();
+
+                        }
+
                     }
                 }
 
