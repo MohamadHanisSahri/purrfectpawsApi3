@@ -277,142 +277,127 @@ namespace PurrfectpawsApi.Controllers
 
 
 
-        // POST: api/TProductDetails
-
         [HttpPost]
-
         public async Task<ActionResult<TPostProductDetail>> PostTProductDetail([FromForm] TPostProductDetail TPostProductDetail)
-
         {
 
 
-
-
-
             if (_context.TProductDetails == null)
-
             {
-
                 return Problem("Entity set 'PurrfectpawsContext.TProductDetails'  is null.");
-
             }
 
-
-
             var newProductDetail = new TProductDetail
-
             {
-
                 CategoryId = TPostProductDetail.CategoryId,
-
                 ProductName = TPostProductDetail.ProductName,
-
                 ProductDescription = TPostProductDetail.ProductDescription,
-
                 ProductPrice = TPostProductDetail.ProductPrice,
-
                 ProductCost = TPostProductDetail.ProductCost,
-
                 ProductRevenue = TPostProductDetail.ProductRevenue,
-
                 ProductProfit = TPostProductDetail.ProductProfit,
-
                 QuantitySold = TPostProductDetail.QuantitySold,
-
             };
 
-
-
             // newProductDetail.TProductBlobImages = tProductDetail.TProductBlobImages;
-
-
 
             _context.TProductDetails.Add(newProductDetail);
 
 
-
             await _context.SaveChangesAsync();
 
-
-
             if (TPostProductDetail.Image != null)
-
             {
-
                 var uploadedFileNames = new List<string>();
-
                 var imageUrls = new List<string>();
 
-
-
                 string connectionString = _configuration.GetConnectionString("PurrfectpawsBlobStorageConnString");
-
                 BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
 
-
-
                 var containerName = "storagecontainerpurrfectpaws";
-
                 var filename = Guid.NewGuid() + Path.GetExtension(TPostProductDetail.Image.FileName);
-
-
 
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
-
-
                 BlobClient blobClient = containerClient.GetBlobClient(filename);
 
-
-
                 using (var stream = TPostProductDetail.Image.OpenReadStream())
+                {
+                    await blobClient.UploadAsync(stream, true);
+                }
 
+                uploadedFileNames.Add(filename);
+
+                var imageUrl = $"{blobClient.Uri}";
+                imageUrls.Add(imageUrl);
+
+                var productBlobImage = new TProductBlobImage
+                {
+                    ProductDetailsId = newProductDetail.ProductDetailsId,
+                    BlobStorageId = filename
+                };
+
+                _context.TProductBlobImages.Add(productBlobImage);
+
+
+                var catId = TPostProductDetail.CategoryId;
+                if (catId == 1)
                 {
 
-                    await blobClient.UploadAsync(stream, true);
+                    var tProduct = new TProduct
+                    {
+                        ProductDetailsId = newProductDetail.ProductDetailsId,
+                        SizeId = 1,
+                        LeadLengthId = null,
+                        VariationId = 1,
+                        ProductQuantity = 1
+                    };
+
+                    _context.TProducts.Add(tProduct);
+
+
+                }
+                else if (catId == 2)
+                {
+                    var tProduct = new TProduct
+                    {
+                        ProductDetailsId = newProductDetail.ProductDetailsId,
+                        SizeId = 1,
+                        LeadLengthId = null,
+                        VariationId = 1,
+                        ProductQuantity = 1
+                    };
+
+                    _context.TProducts.Add(tProduct);
+
+                }
+                else
+                {
+
+                    var tProduct = new TProduct
+                    {
+                        ProductDetailsId = newProductDetail.ProductDetailsId,
+                        SizeId = null,
+                        LeadLengthId = 1,
+                        VariationId = 1,
+                        ProductQuantity = 1
+                    };
+
+                    _context.TProducts.Add(tProduct);
+
 
                 }
 
 
 
-                uploadedFileNames.Add(filename);
-
-
-
-                var imageUrl = $"{blobClient.Uri}";
-
-                imageUrls.Add(imageUrl);
-
-
-
-                var productBlobImage = new TProductBlobImage
-
-                {
-
-                    ProductDetailsId = newProductDetail.ProductDetailsId,
-
-                    BlobStorageId = filename
-
-                };
-
-
-
-                _context.TProductBlobImages.Add(productBlobImage);
 
                 await _context.SaveChangesAsync();
-
             }
-
-
-
 
 
             //return CreatedAtAction("GetTProductDetail", new { id = tProductDetail.ProductDetailsId }, tProductDetail);
 
-
-
             return Ok("success");
-
         }
 
 
