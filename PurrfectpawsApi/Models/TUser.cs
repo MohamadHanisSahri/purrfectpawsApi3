@@ -58,11 +58,13 @@ public class TUserDTO
     public string city { get; set; }
     public string state { get; set; }
     public int postcode { get; set; }
+    public string? country { get; set; }
     public string? billingStreet_1 { get; set; }
     public string? billingStreet_2 { get; set; }
     public string? billingCity { get; set; }
     public string? billingState { get; set; }
     public int? billingPostcode { get; set; }
+    public string? billingCountry { get; set; }
 
 }
 

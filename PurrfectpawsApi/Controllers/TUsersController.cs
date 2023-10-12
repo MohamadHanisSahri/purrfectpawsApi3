@@ -127,7 +127,8 @@ namespace PurrfectpawsApi.Controllers
                     Street2 = sa.Street2,
                     City = sa.City,
                     State = sa.State,
-                    Postcode = sa.Postcode
+                    Postcode = sa.Postcode,
+                    Country = sa.Country
                 }).ToList(),
                 BillingAddresses = user.TBillingAddresses.Select(ba => new TBillingAddress
                 {
@@ -137,7 +138,8 @@ namespace PurrfectpawsApi.Controllers
                     Street2 = ba.Street2,
                     City = ba.City,
                     State = ba.State,
-                    Postcode = ba.Postcode
+                    Postcode = ba.Postcode,
+                    Country = ba.Country
                 }).ToList()
             };
 
@@ -270,7 +272,8 @@ namespace PurrfectpawsApi.Controllers
                 Street2 = tUserDTO.street_2,
                 City = tUserDTO.city,
                 State = tUserDTO.state,
-                Postcode = tUserDTO.postcode
+                Postcode = tUserDTO.postcode,
+                Country = tUserDTO.country
             };
             _context.TShippingAddresses.Add(shippingAddress);
             if (tUserDTO.isBillingAddressSame == true)
@@ -282,7 +285,8 @@ namespace PurrfectpawsApi.Controllers
                     Street2 = tUserDTO.street_2,
                     City = tUserDTO.city,
                     State = tUserDTO.state,
-                    Postcode = tUserDTO.postcode
+                    Postcode = tUserDTO.postcode,
+                    Country = tUserDTO.country
                 };
                 _context.TBillingAddresses.Add(billingAddress);
             }
@@ -295,7 +299,8 @@ namespace PurrfectpawsApi.Controllers
                     Street2 = tUserDTO.billingStreet_2,
                     City = tUserDTO.billingCity,
                     State = tUserDTO.billingState,
-                    Postcode = tUserDTO.billingPostcode
+                    Postcode = tUserDTO.billingPostcode,
+                    Country = tUserDTO.billingCountry
                 };
                 _context.TBillingAddresses.Add(billingAddress);
             }
